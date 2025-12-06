@@ -21,10 +21,14 @@ public class DriveForwardCommand extends Command {
      * Creates a new DriveForwardCommand.
      *
      * @param driveSubsystem The drive subsystem to use
-     * @param distanceMeters The distance to drive forward in meters
+     * @param distanceMeters The distance to drive forward in meters (must be positive and finite)
+     * @throws IllegalArgumentException if distanceMeters is not finite or is negative
      */
     public DriveForwardCommand(DriveSubsystem driveSubsystem, double distanceMeters) {
         m_driveSubsystem = driveSubsystem;
+        if (!Double.isFinite(distanceMeters) || distanceMeters < 0) {
+            throw new IllegalArgumentException("Distance must be a positive finite number, got: " + distanceMeters);
+        }
         m_distanceMeters = distanceMeters;
         addRequirements(driveSubsystem);
     }
@@ -51,8 +55,8 @@ public class DriveForwardCommand extends Command {
     @Override
     public boolean isFinished() {
         // Safety timeout to prevent infinite execution if encoders fail
-        m_timeoutCounter++;
-        if (m_timeoutCounter > MAX_ITERATIONS) {
+        if (++m_timeoutCounter > MAX_ITERATIONS) {
+            System.err.println("WARNING: DriveForwardCommand timed out after " + MAX_ITERATIONS + " iterations");
             return true;
         }
         

@@ -25,13 +25,12 @@ public class IntakeSetCommand extends Command {
 
     @Override
     public void initialize() {
-        // Start running at set velocity
-        m_intakeSubsystem.runAtVelocity();
+        // Velocity control is handled in execute() - no initialization needed
     }
 
     @Override
     public void execute() {
-        // Keep running at velocity while command is active
+        // Run at configured velocity while command is active
         m_intakeSubsystem.runAtVelocity();
     }
 

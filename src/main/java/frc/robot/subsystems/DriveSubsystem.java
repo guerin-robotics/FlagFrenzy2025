@@ -50,6 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Sets the motor speeds for the drivetrain.
+     * Note: Right motor is inverted to match physical wiring/orientation.
      *
      * @param leftSpeed Left motor speed (-1.0 to 1.0)
      * @param rightSpeed Right motor speed (-1.0 to 1.0)
@@ -64,7 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
         
         m_leftDrive.set(leftSpeed);
-        m_rightDrive.set(-rightSpeed);
+        m_rightDrive.set(-rightSpeed); // Inverted to match physical orientation
     }
 }
 

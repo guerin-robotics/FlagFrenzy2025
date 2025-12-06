@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 
 @Logged
 public class FeederSubsystem extends SubsystemBase {
@@ -23,13 +24,9 @@ public class FeederSubsystem extends SubsystemBase {
     // Configure PID and feedforward gains
     configureShooterMotor();
     
-    // Set default command to turn off the shooter motor, and then idle
+    // Set default command to keep shooter motor idle (off)
     setDefaultCommand(
-        runOnce(
-                () -> {
-                  m_shooterMotor.set(0);
-                })
-            .andThen(run(() -> {}))
+        run(() -> m_shooterMotor.set(0))
             .withName("Idle"));
   }
 

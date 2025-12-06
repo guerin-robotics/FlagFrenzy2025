@@ -60,11 +60,9 @@ public class ArcadeDriveCommand extends Command {
         m_driveSubsystem.setMotors(leftSpeed, rightSpeed);
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        // Stop motors if command is interrupted
-        m_driveSubsystem.setMotors(0, 0);
-    }
+    // Note: No end() method needed - this is a default command that should seamlessly
+    // resume when interrupted commands finish. Stopping motors here would cause
+    // the robot to stop moving when switching between commands.
 
     @Override
     public boolean isFinished() {

@@ -72,7 +72,7 @@ All code changes should be reviewed before merging. This ensures code quality, p
 Use the following prompt with your AI coding assistant or code review tool:
 
 ```
-Review this Java code for a pull request. Check that it follows proper WPILib command-based programming structure, uses correct syntax, and avoids logic/API errors. Verify that commands are scheduled correctly, do not conflict or overrun, and follow lifecycle expectations (initialize, execute, end). Look for opportunities for defensive coding, improved robustness, and cleaner organization. Point out any bugs, anti-patterns, or readability issues, and suggest concise fixes.
+Review this Java code for a pull request. Check that it follows proper WPILib command-based programming structure, uses correct syntax, and avoids logic/API errors. Verify that commands are scheduled correctly, do not conflict or overrun, and follow lifecycle expectations (initialize, execute, end). Look for opportunities for defensive coding, improved robustness, and cleaner organization. Point out any bugs, anti-patterns, or readability issues, and suggest concise fixes and then act and execute those fixes and update the readme and other documentation.
 ```
 
 ### Review Checklist
@@ -158,8 +158,8 @@ When reviewing code, verify:
 
 ### Review Documentation
 
-- See `PR_CODE_REVIEW.md` for detailed review findings and recommendations
-- See `CODE_REVIEW.md` for comprehensive code review guidelines
+- See [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) for comprehensive code review guidelines and findings
+- See [`docs/CODE_SUMMARY.md`](docs/CODE_SUMMARY.md) for a complete overview of the robot code
 
 ## Project Structure
 
@@ -170,10 +170,30 @@ src/main/java/frc/robot/
 ├── RobotContainer.java       # Button bindings and command setup
 ├── Constants.java            # All robot constants
 ├── commands/
-│   └── [Command classes]     # Robot commands
+│   ├── ArcadeDriveCommand.java              # Teleop drive control
+│   ├── DriveForwardCommand.java             # Autonomous forward movement
+│   ├── DriveToTargetDistanceCommand.java    # Position using distance sensors
+│   ├── AlignWithDistanceSensorsCommand.java # PID alignment with sensors
+│   └── IntakeSetCommand.java               # Intake control
 └── subsystems/
-    └── [Subsystem classes]   # Robot subsystems
+    ├── DriveSubsystem.java          # Drive motors and encoders
+    ├── IntakeSubsystem.java        # Intake motor control
+    ├── FeederSubsystem.java        # Shooter motor with PID
+    └── DistanceSensorSubsystem.java # LaserCAN distance sensors
 ```
+
+## Robot Features
+
+### Distance Sensor System
+- **Grapple Robotics LaserCAN sensors** (left and right)
+- **PID-based alignment** - Hold Button 7 to automatically align robot using sensors
+- **Autonomous positioning** - Commands to position robot at optimal shooting distance
+- **SmartDashboard telemetry** - Real-time distance readings and alignment status
+
+### Control Scheme
+- **Button 5**: Toggle shooter on/off
+- **Button 6**: Run intake (while held)
+- **Button 7**: PID alignment with distance sensors (while held)
 
 ## Contributing
 
@@ -198,6 +218,14 @@ When making changes:
    - Update JavaDoc for new methods
    - Update README if structure changes
    - Document any non-obvious design decisions
+
+## Documentation
+
+Additional documentation is available in the [`docs/`](docs/) folder:
+- [`CODE_SUMMARY.md`](docs/CODE_SUMMARY.md) - Complete overview of robot code and architecture
+- [`CODE_REVIEW.md`](docs/CODE_REVIEW.md) - Code review guidelines and findings
+- [`SHOOTER_TUNING_GUIDE.md`](docs/SHOOTER_TUNING_GUIDE.md) - Shooter tuning instructions
+- [`BUILD_TROUBLESHOOTING.md`](docs/BUILD_TROUBLESHOOTING.md) - Build and deployment troubleshooting
 
 ## License
 
