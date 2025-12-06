@@ -22,6 +22,9 @@ public class DriveToTargetDistanceCommand extends Command {
     private final double m_speed;
     private final Timer m_timer = new Timer();
     private final double m_timeoutSeconds;
+    
+    // Warning suppression to avoid console spam
+    private boolean m_hasWarnedInvalidSensors = false;
 
     /**
      * Creates a new DriveToTargetDistanceCommand using default constants.
@@ -71,6 +74,7 @@ public class DriveToTargetDistanceCommand extends Command {
     public void initialize() {
         m_timer.reset();
         m_timer.start();
+        m_hasWarnedInvalidSensors = false; // Reset warning flag
         System.out.println("DriveToTargetDistance: Starting positioning to " + m_targetDistance + "m");
     }
 
@@ -78,8 +82,14 @@ public class DriveToTargetDistanceCommand extends Command {
     public void execute() {
         // Check if sensors are valid
         if (!m_distanceSensorSubsystem.bothSensorsValid()) {
-            System.err.println("WARNING: Distance sensors not reading valid values!");
-            // Continue trying, but log the issue
+            if (!m_hasWarnedInvalidSensors) {
+                System.err.println("WARNING: Distance sensors not reading valid values!");
+                m_hasWarnedInvalidSensors = true; // Only warn once per command execution
+            }
+            // Continue trying, but log the issue only once
+        } else {
+            // Reset warning flag if sensors become valid again
+            m_hasWarnedInvalidSensors = false;
         }
 
         // Get current distances

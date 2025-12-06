@@ -67,5 +67,21 @@ public class DriveSubsystem extends SubsystemBase {
         m_leftDrive.set(leftSpeed);
         m_rightDrive.set(-rightSpeed); // Inverted to match physical orientation
     }
+
+    /**
+     * Applies brake power to both drive motors to help slow down the robot.
+     * Used when the robot is disabled.
+     *
+     * @param brakePower Brake power to apply (0.0 to 1.0, typically negative for reverse/braking)
+     */
+    public void brake(double brakePower) {
+        // Validate input
+        if (!Double.isFinite(brakePower)) {
+            brakePower = 0;
+        }
+        
+        m_leftDrive.set(brakePower);
+        m_rightDrive.set(-brakePower); // Inverted to match physical orientation
+    }
 }
 

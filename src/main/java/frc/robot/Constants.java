@@ -63,6 +63,13 @@ public final class Constants {
      */
     public static final double kMaxDriveSpeedPercent = 0.7; // 70% speed (limited)
 
+    /**
+     * Brake power applied when robot is disabled (0.0 to 1.0).
+     * This applies reverse power to help slow down the robot faster.
+     * 0.15 = 15% reverse power for braking
+     */
+    public static final double kDisabledBrakePower = 0.15; // 15% brake power
+
     // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
     // These values MUST be determined either experimentally or theoretically for *your* robot's
     // drive. The SysId tool provides a convenient method for obtaining feedback and feedforward
@@ -149,17 +156,17 @@ public final class Constants {
 
   }
 
-  public static final class IntakeConstants {
-    /** CAN ID for intake motor */
-    public static final int kIntakeMotorPort = 4; // CAN ID for intake motor
-    public static final double kOpenSpeed = 0; // Speed for opening intake
-    public static final double kCloseSpeed = -0.10; // Speed for closing intake
+  public static final class FeederConstants {
+    /** CAN ID for feeder motor */
+    public static final int kFeederMotorPort = 4; // CAN ID for feeder motor
+    public static final double kOpenSpeed = -0.03; // Speed for opening feeder
+    public static final double kCloseSpeed = -0.10; // Speed for closing feeder
     
     /**
-     * Intake velocity in rotations per second.
-     * Positive values run the intake forward (intaking), negative values run reverse.
+     * Feeder velocity in rotations per second.
+     * Positive values run the feeder forward (feeding into shooter), negative values run reverse.
      */
-    public static final double kIntakeVelocityRPS = 10.0; // Rotations per second
+    public static final double kFeederVelocityRPS = 10.0; // Rotations per second
   }
 
   public static final class AutoConstants {
@@ -276,7 +283,7 @@ public final class Constants {
     public static final int kDriverJoystickPort = 0;
     public static final int kArcadeDriveSpeedAxis = 1; // Y-axis for forward/backward
     public static final int kArcadeDriveTurnAxis = 0; // X-axis for turning
-    public static final int kIntakeCloseButtonIdx = 6; // Button index for closing intake
+    public static final int kIntakeCloseButtonIdx = 6; // Button index for running feeder (legacy name kept for compatibility)
     public static final int kShooterButtonIdx = 5; // Button index for turning on shooter
     public static final int kAlignButtonIdx = 7; // Button index for aligning with distance sensors
     

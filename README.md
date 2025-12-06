@@ -174,11 +174,11 @@ src/main/java/frc/robot/
 │   ├── DriveForwardCommand.java             # Autonomous forward movement
 │   ├── DriveToTargetDistanceCommand.java    # Position using distance sensors
 │   ├── AlignWithDistanceSensorsCommand.java # PID alignment with sensors
-│   └── IntakeSetCommand.java               # Intake control
+│   └── FeederSetCommand.java               # Feeder control
 └── subsystems/
     ├── DriveSubsystem.java          # Drive motors and encoders
-    ├── IntakeSubsystem.java        # Intake motor control
-    ├── FeederSubsystem.java        # Shooter motor with PID
+    ├── FeederSubsystem.java        # Feeder motor control
+    ├── ShooterSubsystem.java        # Shooter motor with PID
     └── DistanceSensorSubsystem.java # LaserCAN distance sensors
 ```
 
@@ -190,9 +190,15 @@ src/main/java/frc/robot/
 - **Autonomous positioning** - Commands to position robot at optimal shooting distance
 - **SmartDashboard telemetry** - Real-time distance readings and alignment status
 
+### Safety Features
+- **Disabled motor braking** - All motors apply 15% reverse power when robot is disabled
+- **Input validation** - NaN/Infinity checks on all motor commands and joystick inputs
+- **Error handling** - Comprehensive error handling with warning suppression
+- **Timeout protection** - Safety timeouts on all autonomous commands
+
 ### Control Scheme
 - **Button 5**: Toggle shooter on/off
-- **Button 6**: Run intake (while held)
+- **Button 6**: Run feeder (while held)
 - **Button 7**: PID alignment with distance sensors (while held)
 
 ## Contributing

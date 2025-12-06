@@ -7,8 +7,8 @@
 
 ## Critical Issues 🔴
 
-### 1. **FeederSubsystem: Missing Static Import for Command Factory Methods**
-**File**: `FeederSubsystem.java:27-33`
+### 1. **ShooterSubsystem: Missing Static Import for Command Factory Methods**
+**File**: `ShooterSubsystem.java:27-33`
 **Issue**: Uses `runOnce()` and `run()` without proper imports. These are static factory methods on `Command`.
 **Fix**: Add static imports:
 ```java
@@ -40,8 +40,8 @@ public void end(boolean interrupted) {
 
 **Impact**: Robot may stop unexpectedly when switching between commands.
 
-### 3. **IntakeSetCommand: Redundant runAtVelocity() Calls**
-**File**: `IntakeSetCommand.java:27-35`
+### 3. **FeederSetCommand: Redundant runAtVelocity() Calls**
+**File**: `FeederSetCommand.java:27-35`
 **Issue**: Calls `runAtVelocity()` in both `initialize()` and `execute()`. For continuous commands, `execute()` is sufficient.
 **Fix**: Remove from `initialize()`:
 ```java
@@ -124,8 +124,8 @@ public boolean isFinished() {
 ```
 **Impact**: Minor - current implementation works but could be clearer.
 
-### 8. **FeederSubsystem: Default Command Complexity**
-**File**: `FeederSubsystem.java:27-33`
+### 8. **ShooterSubsystem: Default Command Complexity**
+**File**: `ShooterSubsystem.java:27-33`
 **Issue**: The default command uses `runOnce().andThen(run(() -> {}))` which is unnecessarily complex. A simple `run(() -> m_shooterMotor.set(0))` would work.
 **Fix**: Simplify:
 ```java
@@ -139,14 +139,14 @@ setDefaultCommand(
 
 ## Low Priority / Code Quality 🟢
 
-### 9. **IntakeSubsystem: Unused Legacy Method**
-**File**: `IntakeSubsystem.java:36-42`
+### 9. **FeederSubsystem: Unused Legacy Method**
+**File**: `FeederSubsystem.java:36-42`
 **Issue**: `setPosition()` method appears to be legacy and unused (based on comment).
 **Fix**: Remove if truly unused, or document its purpose if it's needed for future use:
 ```java
 /**
  * Legacy method for position-based control (if needed).
- * Currently unused - intake uses velocity control via IntakeSetCommand.
+ * Currently unused - feeder uses velocity control via FeederSetCommand.
  * 
  * @param open If true, sets open speed; if false, sets close speed
  */
@@ -215,5 +215,5 @@ public class RobotContainer {
 2. Verify autonomous command completes correctly with various distances
 3. Test joystick disconnection handling
 4. Verify shooter toggle command works correctly
-5. Test intake command stops properly when button is released
+5. Test feeder command stops properly when button is released
 

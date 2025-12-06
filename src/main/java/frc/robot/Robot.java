@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DriveConstants;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -53,10 +54,31 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    // Cancel all running commands when disabled
+    CommandScheduler.getInstance().cancelAll();
+  }
 
+  /**
+   * This function is called periodically while the robot is disabled.
+   * Applies motor braking to all motors to help slow down the robot faster.
+   */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // Apply braking power to all motors to help slow down faster
+    if (m_robotContainer != null) {
+      double brakePower = -DriveConstants.kDisabledBrakePower; // Negative for reverse/braking
+      
+      // Brake drive motors
+      m_robotContainer.getDriveSubsystem().brake(brakePower);
+      
+      // Brake feeder motor
+      m_robotContainer.getFeederSubsystem().brake(brakePower);
+      
+      // Brake shooter motor
+      m_robotContainer.getShooterSubsystem().brake(brakePower);
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
