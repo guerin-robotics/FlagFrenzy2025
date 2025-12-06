@@ -6,11 +6,11 @@ import frc.robot.commands.AlignWithDistanceSensorsCommand;
 import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.DriveForwardCommand;
 import frc.robot.commands.DriveToTargetDistanceCommand;
-import frc.robot.commands.IntakeSetCommand;
+import frc.robot.commands.FeederSetCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.DistanceSensorSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final FeederSubsystem feederSubsystem = new FeederSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final DistanceSensorSubsystem distanceSensorSubsystem = new DistanceSensorSubsystem();
     // Joystick port: USB port number on the roboRIO/roboRIO 2.0
     // Port 0 = First USB port, Port 1 = Second USB port, etc.
@@ -45,21 +45,48 @@ public class RobotContainer {
                 () -> -joystick1.getRawAxis(OIConstants.kArcadeDriveSpeedAxis),
                 () -> joystick1.getRawAxis(OIConstants.kArcadeDriveTurnAxis))//
         );
-        // No default command for intake - motor only runs when button is pressed
+        // No default command for feeder - motor only runs when button is pressed
     }
 
     private void configureButtonBindings() {
-        // Button 6: Run intake motor at set velocity (while held)
+        // Button 6: Run feeder motor at set velocity (while held)
         new JoystickButton(joystick1, OIConstants.kIntakeCloseButtonIdx)
-                .whileTrue(new IntakeSetCommand(intakeSubsystem));
+                .whileTrue(new FeederSetCommand(feederSubsystem));
         
         // Button 5: Toggle shooter on/off - runs at target velocity using PID control
         new JoystickButton(joystick1, OIConstants.kShooterButtonIdx)
-                .toggleOnTrue(feederSubsystem.shootCommand());
+                .toggleOnTrue(shooterSubsystem.shootCommand());
         
         // Button 7: Align robot using distance sensors with PID control (while held)
         new JoystickButton(joystick1, OIConstants.kAlignButtonIdx)
                 .whileTrue(new AlignWithDistanceSensorsCommand(driveSubsystem, distanceSensorSubsystem));
+    }
+
+    /**
+     * Returns the drive subsystem. Used for applying braking when disabled.
+     * 
+     * @return The drive subsystem
+     */
+    public DriveSubsystem getDriveSubsystem() {
+        return driveSubsystem;
+    }
+
+    /**
+     * Returns the feeder subsystem. Used for applying braking when disabled.
+     * 
+     * @return The feeder subsystem
+     */
+    public FeederSubsystem getFeederSubsystem() {
+        return feederSubsystem;
+    }
+
+    /**
+     * Returns the shooter subsystem. Used for applying braking when disabled.
+     * 
+     * @return The shooter subsystem
+     */
+    public ShooterSubsystem getShooterSubsystem() {
+        return shooterSubsystem;
     }
 
     /**
@@ -75,7 +102,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return new SequentialCommandGroup( //
                 new DriveForwardCommand(driveSubsystem, AutoConstants.kAutoDriveForwardDistance) //
-                // Intake can be added here if needed for autonomous
+                // Feeder can be added here if needed for autonomous
         );
     }
 
@@ -91,7 +118,7 @@ public class RobotContainer {
                 // Wait a moment for robot to settle
                 new WaitCommand(0.5),
                 // Start shooter
-                feederSubsystem.shootCommand()
+                shooterSubsystem.shootCommand()
         );
     }
     */

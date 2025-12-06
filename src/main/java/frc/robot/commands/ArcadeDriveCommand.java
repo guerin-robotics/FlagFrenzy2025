@@ -39,6 +39,14 @@ public class ArcadeDriveCommand extends Command {
         double speedValue = m_speed.getAsDouble();
         double turnValue = m_turn.getAsDouble();
         
+        // Validate inputs to prevent NaN/Infinity from damaging motors
+        if (!Double.isFinite(speedValue)) {
+            speedValue = 0;
+        }
+        if (!Double.isFinite(turnValue)) {
+            turnValue = 0;
+        }
+        
         // Apply deadband to prevent drift from small joystick movements
         speedValue = MathUtil.applyDeadband(speedValue, OIConstants.kJoystickDeadband);
         turnValue = MathUtil.applyDeadband(turnValue, OIConstants.kJoystickDeadband);

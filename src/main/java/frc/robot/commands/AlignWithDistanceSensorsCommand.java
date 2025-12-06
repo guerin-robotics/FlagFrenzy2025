@@ -28,6 +28,9 @@ public class AlignWithDistanceSensorsCommand extends Command {
     
     // Target distance
     private final double m_targetDistance;
+    
+    // Warning suppression to avoid console spam
+    private boolean m_hasWarnedInvalidSensors = false;
 
     /**
      * Creates a new AlignWithDistanceSensorsCommand using default constants.
@@ -80,6 +83,7 @@ public class AlignWithDistanceSensorsCommand extends Command {
         // Reset PID controllers
         m_alignmentPID.reset();
         m_distancePID.reset();
+        m_hasWarnedInvalidSensors = false; // Reset warning flag
         System.out.println("AlignWithDistanceSensors: Starting alignment to " + m_targetDistance + "m");
     }
 
@@ -92,10 +96,16 @@ public class AlignWithDistanceSensorsCommand extends Command {
         // Check if sensors are valid
         if (leftDistance < 0 || rightDistance < 0) {
             // Invalid readings - stop for safety
-            System.err.println("WARNING: Distance sensors not reading valid values!");
+            if (!m_hasWarnedInvalidSensors) {
+                System.err.println("WARNING: Distance sensors not reading valid values!");
+                m_hasWarnedInvalidSensors = true; // Only warn once per command execution
+            }
             m_driveSubsystem.setMotors(0, 0);
             return;
         }
+        
+        // Reset warning flag if sensors become valid again
+        m_hasWarnedInvalidSensors = false;
 
         // Calculate alignment error (difference between sensors)
         // Positive error = left sensor is further, need to turn left

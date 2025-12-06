@@ -4,23 +4,24 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.FeederSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * Command to run the intake at a set velocity when button is pressed.
+ * Command to run the feeder at a set velocity when button is pressed.
+ * The feeder moves balls from the intake into the shooter.
  */
-public class IntakeSetCommand extends Command {
-    private final IntakeSubsystem m_intakeSubsystem;
+public class FeederSetCommand extends Command {
+    private final FeederSubsystem m_feederSubsystem;
 
     /**
-     * Creates a new IntakeSetCommand that runs the intake at the configured velocity.
+     * Creates a new FeederSetCommand that runs the feeder at the configured velocity.
      *
-     * @param intakeSubsystem The intake subsystem to use
+     * @param feederSubsystem The feeder subsystem to use
      */
-    public IntakeSetCommand(IntakeSubsystem intakeSubsystem) {
-        m_intakeSubsystem = intakeSubsystem;
-        addRequirements(intakeSubsystem);
+    public FeederSetCommand(FeederSubsystem feederSubsystem) {
+        m_feederSubsystem = feederSubsystem;
+        addRequirements(feederSubsystem);
     }
 
     @Override
@@ -31,13 +32,13 @@ public class IntakeSetCommand extends Command {
     @Override
     public void execute() {
         // Run at configured velocity while command is active
-        m_intakeSubsystem.runAtVelocity();
+        m_feederSubsystem.runAtVelocity();
     }
 
     @Override
     public void end(boolean interrupted) {
-        // Stop the intake motor when button is released
-        m_intakeSubsystem.stop();
+        // Stop the feeder motor when button is released
+        m_feederSubsystem.stop();
     }
 
     @Override
