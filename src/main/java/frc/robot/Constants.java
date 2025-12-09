@@ -30,21 +30,7 @@ public final class Constants {
     public static final int kLeftMotorPort = 1;  // CAN ID for left drive motor
     public static final int kRightMotorPort = 2; // CAN ID for right drive motor
 
-    public static final int[] kLeftEncoderPorts = {0, 1};
-    public static final int[] kRightEncoderPorts = {2, 3};
-    public static final int kLeftEncoderChannelA = 0;
-    public static final int kLeftEncoderChannelB = 1;
-    public static final int kRightEncoderChannelA = 2;
-    public static final int kRightEncoderChannelB = 3;
-    public static final boolean kLeftEncoderReversed = false;
-    public static final boolean kRightEncoderReversed = true;
-
-    public static final int kEncoderCPR = 1024;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(2);
-    public static final double kEncoderDistancePerPulse =
-        // Assumes the encoders are directly mounted on the wheel shafts
-        (kWheelDiameterMeters * Math.PI) / kEncoderCPR;
-    public static final double kEncoderTick2Meter = kEncoderDistancePerPulse; // Alias for compatibility
 
     // TalonFX internal encoder constants (for Kraken motors)
     // Gear ratio: motor rotations per wheel rotation
@@ -53,6 +39,13 @@ public final class Constants {
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // Conversion: TalonFX position (rotations) * gear ratio * wheel circumference = distance in meters
     public static final double kTalonFXRotationsToMeters = kGearRatio * kWheelCircumferenceMeters;
+
+    /**
+     * Track width (distance between left and right wheels) in meters.
+     * Used for calculating rotation from encoder differences.
+     * Measure the distance between the centers of the left and right wheels.
+     */
+    public static final double kTrackWidthMeters = Units.inchesToMeters(24); // Adjust based on your robot's actual track width
 
     /**
      * Maximum speed multiplier for the drivetrain (0.0 to 1.0).
@@ -64,42 +57,26 @@ public final class Constants {
     public static final double kMaxDriveSpeedPercent = 0.7; // 70% speed (limited)
 
     /**
+     * Turn sensitivity multiplier (0.0 to 1.0).
+     * Reduces the effect of turning compared to forward/backward movement for easier control.
+     * 1.0 = Full turning sensitivity (100%)
+     * 0.5 = Half turning sensitivity (50% - easier to drive straight)
+     * 0.3 = Low turning sensitivity (30% - very easy to drive straight)
+     * Lower values make the robot easier to control but reduce turning responsiveness.
+     */
+    public static final double kTurnSensitivityMultiplier = 0.5; // 50% turn sensitivity
+
+    /**
      * Brake power applied when robot is disabled (0.0 to 1.0).
      * This applies reverse power to help slow down the robot faster.
      * 0.15 = 15% reverse power for braking
      */
     public static final double kDisabledBrakePower = 0.15; // 15% brake power
-
-    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
-    // These values MUST be determined either experimentally or theoretically for *your* robot's
-    // drive. The SysId tool provides a convenient method for obtaining feedback and feedforward
-    // values for your robot.
-    public static final double kTurnP = 1;
-    public static final double kTurnI = 0;
-    public static final double kTurnD = 0;
-
-    public static final double kTurnToleranceDeg = 5;
-    public static final double kTurnRateToleranceDegPerS = 10; // degrees per second
-
-    public static final double kMaxTurnRateDegPerS = 100;
-    public static final double kMaxTurnAccelerationDegPerSSquared = 300;
-
-    public static final double ksVolts = 1;
-    public static final double kvVoltSecondsPerDegree = 0.8;
-    public static final double kaVoltSecondsSquaredPerDegree = 0.15;
   }
 
   public static final class ShooterConstants {
     /** CAN ID for shooter motor */
     public static final int kShooterMotorPort = 3; // CAN ID for shooter motor
-
-    /**
-     * Shooter speed as a percentage (-1.0 to 1.0).
-     * Negative values run the motor in reverse.
-     * 0.10 = 10% forward speed, -0.10 = 10% reverse speed
-     * NOTE: This is kept for reference, but shooter now uses velocity control
-     */
-    public static final double kShooterSpeedPercent = -0.28; // 28% (kept for reference)
 
     /**
      * Target shooter velocity in rotations per second (RPS).
@@ -117,7 +94,7 @@ public final class Constants {
      * TO SPIN FASTER: Increase the absolute value (e.g., -25.0 → -30.0 → -35.0)
      * TO SPIN SLOWER: Decrease the absolute value (e.g., -25.0 → -20.0 → -15.0)
      */
-    public static final double kShooterTargetVelocityRPS = -25.0; // Start here for smaller motors (adjust based on testing)
+    public static final double kShooterTargetVelocityRPS = -28.0; // Start here for smaller motors (adjust based on testing)
     
     /**
      * PID gains for shooter velocity control.
@@ -133,7 +110,7 @@ public final class Constants {
      * - Consistent undershoot? Add small kI (0.0001-0.0005)
      */
     public static final double kShooterP = 0.05; // Start conservative for smaller motors
-    public static final double kShooterI = 0.0001;  // Add if steady-state error
+    public static final double kShooterI = 0.000;  // Add if steady-state error
     public static final double kShooterD = 0.0;   // Add if overshooting
     
     /**
@@ -152,119 +129,29 @@ public final class Constants {
      * - kV should get you close to target WITHOUT PID
      */
     public static final double kShooterKS = 0.0;  // Static friction (usually 0 for smaller motors)
-    public static final double kShooterKV = 0.10; // Start here - most critical value! Tune this first
+    public static final double kShooterKV = 0.16; // Start here - most critical value! Tune this first
 
   }
 
   public static final class FeederConstants {
     /** CAN ID for feeder motor */
     public static final int kFeederMotorPort = 4; // CAN ID for feeder motor
-    public static final double kOpenSpeed = -0.03; // Speed for opening feeder
-    public static final double kCloseSpeed = -0.10; // Speed for closing feeder
-    
+
     /**
-     * Feeder velocity in rotations per second.
-     * Positive values run the feeder forward (feeding into shooter), negative values run reverse.
+     * Feeder motor percent output.
+     * Positive values feed balls into the shooter; adjust based on testing.
      */
-    public static final double kFeederVelocityRPS = 10.0; // Rotations per second
+    public static final double kFeederPercentOutput = -0.11; // 11% power
   }
 
   public static final class AutoConstants {
-    public static final double kTimeoutSeconds = 3;
-    public static final double kAutoDriveForwardDistance = 2.0; // Distance in meters for autonomous
+    public static final double kAutoDriveForwardDistance = 0.5; // Distance in meters for autonomous
     public static final double kDriveSpeed = 0.5; // Speed for autonomous driving
-  }
-
-  public static final class DistanceSensorConstants {
-    /**
-     * CAN IDs for Grapple Robotics LaserCAN distance sensors.
-     * 
-     * To configure:
-     * 1. Connect left LaserCAN sensor to CAN bus
-     * 2. Connect right LaserCAN sensor to CAN bus
-     * 3. Set CAN IDs using Grapple Robotics configuration tool or Phoenix Tuner
-     * 4. Update these constants to match the configured CAN IDs
-     */
-    public static final int kLeftDistanceSensorCANId = 5;  // CAN ID for left LaserCAN sensor
-    public static final int kRightDistanceSensorCANId = 6; // CAN ID for right LaserCAN sensor
-
-    /**
-     * Target distance in meters for shooting alignment.
-     * The robot will move forward until both sensors read this distance.
-     * 
-     * Tuning:
-     * - Measure the optimal shooting distance
-     * - Update this value based on testing
-     * - LaserCAN typically measures 0.1m to 4.0m accurately
-     */
-    public static final double kTargetDistanceMeters = 1.0; // Target distance in meters
-
-    /**
-     * Tolerance for distance matching (in meters).
-     * Both sensors must be within this tolerance of the target distance.
-     * Smaller values = more precise positioning, but may take longer to achieve.
-     */
-    public static final double kDistanceToleranceMeters = 0.05; // 5cm tolerance
-
-    /**
-     * Slow forward speed for precise positioning (0.0 to 1.0).
-     * Lower values = slower, more precise movement.
-     */
-    public static final double kPositioningSpeed = 0.2; // 20% speed for precise positioning
-
-    /**
-     * Maximum time to spend positioning (seconds).
-     * Safety timeout to prevent infinite positioning attempts.
-     */
-    public static final double kMaxPositioningTimeSeconds = 5.0;
-
-    /**
-     * PID gains for alignment control.
-     * The alignment PID controls turning to keep both sensors at the same distance.
-     * 
-     * Tuning guide:
-     * - kP: Start with 0.5, increase if too slow, decrease if oscillating
-     * - kI: Add 0.01-0.05 if there's steady-state error
-     * - kD: Add 0.01-0.1 if overshooting or oscillating
-     */
-    public static final double kAlignmentP = 0.5;  // Proportional gain for alignment
-    public static final double kAlignmentI = 0.0;  // Integral gain (add if needed)
-    public static final double kAlignmentD = 0.0;  // Derivative gain (add if needed)
-
-    /**
-     * PID gains for distance control (forward/backward movement).
-     * Controls moving forward/backward to reach target distance.
-     * 
-     * Tuning guide:
-     * - kP: Start with 0.3, adjust based on response
-     * - kI: Add if steady-state error persists
-     * - kD: Add if overshooting
-     */
-    public static final double kDistanceP = 0.3;  // Proportional gain for distance
-    public static final double kDistanceI = 0.0;  // Integral gain (add if needed)
-    public static final double kDistanceD = 0.0;  // Derivative gain (add if needed)
-
-    /**
-     * Maximum turn speed for alignment (0.0 to 1.0).
-     * Limits how fast the robot can turn during alignment.
-     */
-    public static final double kMaxAlignmentTurnSpeed = 0.4; // 40% max turn speed
-
-    /**
-     * Maximum forward/backward speed for distance control (0.0 to 1.0).
-     * Limits how fast the robot moves forward/backward during alignment.
-     */
-    public static final double kMaxAlignmentDriveSpeed = 0.3; // 30% max drive speed
-
-    /**
-     * Tolerance for alignment (in meters).
-     * Both sensors must be within this difference to be considered aligned.
-     */
-    public static final double kAlignmentToleranceMeters = 0.02; // 2cm difference tolerance
+    public static final double kTurnSpeed = 0.4; // Speed for turning in autonomous
+    public static final double kAutoTurnDegrees = 90.0; // Turn angle in degrees for autonomous
   }
  
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
     /**
      * Joystick USB port number on the roboRIO/roboRIO 2.0.
      * 
@@ -285,14 +172,13 @@ public final class Constants {
     public static final int kArcadeDriveTurnAxis = 0; // X-axis for turning
     public static final int kIntakeCloseButtonIdx = 6; // Button index for running feeder (legacy name kept for compatibility)
     public static final int kShooterButtonIdx = 5; // Button index for turning on shooter
-    public static final int kAlignButtonIdx = 7; // Button index for aligning with distance sensors
     
     /**
      * Deadband value for joystick axes.
      * Values below this threshold will be treated as zero to prevent drift.
      * Typical values: 0.05 - 0.15
      */
-    public static final double kJoystickDeadband = 0.1;
+    public static final double kJoystickDeadband = 0.05;
   }
 }
 

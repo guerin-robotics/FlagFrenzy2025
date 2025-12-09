@@ -34,18 +34,23 @@ public class ShooterSubsystem extends SubsystemBase {
    * Configures the shooter motor with PID and feedforward gains.
    */
   private void configureShooterMotor() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    
-    // Configure PID gains in slot 0
-    Slot0Configs slot0 = config.Slot0;
-    slot0.kP = ShooterConstants.kShooterP;
-    slot0.kI = ShooterConstants.kShooterI;
-    slot0.kD = ShooterConstants.kShooterD;
-    slot0.kS = ShooterConstants.kShooterKS; // Static friction
-    slot0.kV = ShooterConstants.kShooterKV; // Velocity feedforward
-    
-    // Apply configuration
-    m_shooterMotor.getConfigurator().apply(config);
+    try {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      
+      // Configure PID gains in slot 0
+      Slot0Configs slot0 = config.Slot0;
+      slot0.kP = ShooterConstants.kShooterP;
+      slot0.kI = ShooterConstants.kShooterI;
+      slot0.kD = ShooterConstants.kShooterD;
+      slot0.kS = ShooterConstants.kShooterKS; // Static friction
+      slot0.kV = ShooterConstants.kShooterKV; // Velocity feedforward
+      
+      // Apply configuration
+      m_shooterMotor.getConfigurator().apply(config);
+    } catch (Exception e) {
+      System.err.println("ERROR: Failed to configure shooter motor: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   /**

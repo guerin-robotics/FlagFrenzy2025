@@ -72,7 +72,7 @@ All code changes should be reviewed before merging. This ensures code quality, p
 Use the following prompt with your AI coding assistant or code review tool:
 
 ```
-Review this Java code for a pull request. Check that it follows proper WPILib command-based programming structure, uses correct syntax, and avoids logic/API errors. Verify that commands are scheduled correctly, do not conflict or overrun, and follow lifecycle expectations (initialize, execute, end). Look for opportunities for defensive coding, improved robustness, and cleaner organization. Point out any bugs, anti-patterns, or readability issues, and suggest concise fixes and then act and execute those fixes and update the readme and other documentation.
+Review this Java code for a pull request. Check that it follows proper WPILib command-based programming structure, uses correct syntax, and avoids logic/API errors. Verify that commands are scheduled correctly, do not conflict or overrun, and follow lifecycle expectations (initialize, execute, end). Look for opportunities for defensive coding, improved robustness, and cleaner organization. Point out any bugs, anti-patterns, or readability issues, and suggest concise fixes. Do not modify any files yet; provide review comments only.
 ```
 
 ### Review Checklist

@@ -61,11 +61,8 @@ public class ArcadeDriveCommand extends Command {
         speedValue *= DriveConstants.kMaxDriveSpeedPercent;
         turnValue *= DriveConstants.kMaxDriveSpeedPercent;
         
-        // Calculate left and right speeds for arcade drive
-        double leftSpeed = speedValue + turnValue;
-        double rightSpeed = speedValue - turnValue;
-        
-        m_driveSubsystem.setMotors(leftSpeed, rightSpeed);
+        // Use arcade drive method which applies turn sensitivity multiplier
+        m_driveSubsystem.arcadeDrive(speedValue, turnValue);
     }
 
     // Note: No end() method needed - this is a default command that should seamlessly

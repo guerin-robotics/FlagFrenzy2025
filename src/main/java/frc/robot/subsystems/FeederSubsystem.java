@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FeederConstants;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
 
 /**
  * Subsystem for the feeder mechanism that feeds balls into the shooter.
@@ -12,9 +12,15 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 public class FeederSubsystem extends SubsystemBase {
 
     private final TalonFX m_feederMotor = new TalonFX(FeederConstants.kFeederMotorPort);
-    private final VelocityVoltage m_velocityControl = new VelocityVoltage(0);
 
     public FeederSubsystem() {
+        // Explicitly stop the motor at initialization to ensure it doesn't run at startup
+        m_feederMotor.set(0);
+        
+        // Set default command to keep feeder motor stopped
+        setDefaultCommand(
+            run(() -> m_feederMotor.set(0))
+            .withName("Idle"));
     }
 
     @Override
@@ -22,11 +28,11 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the feeder motor to run at the configured velocity.
-     * Runs at the velocity specified in FeederConstants.kFeederVelocityRPS.
+     * Runs the feeder motor at a fixed percentage output.
+     * Uses FeederConstants.kFeederPercentOutput for speed.
      */
     public void runAtVelocity() {
-        m_feederMotor.setControl(m_velocityControl.withVelocity(FeederConstants.kFeederVelocityRPS));
+        m_feederMotor.set(FeederConstants.kFeederPercentOutput);
     }
 
     /**
@@ -34,6 +40,22 @@ public class FeederSubsystem extends SubsystemBase {
      */
     public void stop() {
         m_feederMotor.set(0);
+    }
+
+    /**
+     * Gets the current encoder position in rotations.
+     * 
+     * @return Current encoder position in rotations
+     */
+    public double getEncoderRotations() {
+        return m_feederMotor.getPosition().getValueAsDouble();
+    }
+
+    /**
+     * Resets the encoder position to zero.
+     */
+    public void resetEncoder() {
+        m_feederMotor.setPosition(0);
     }
 
     /**
@@ -49,15 +71,6 @@ public class FeederSubsystem extends SubsystemBase {
         }
         
         m_feederMotor.set(brakePower);
-    }
-
-    // Legacy method for backwards compatibility (if needed)
-    public void setPosition(boolean open) {
-        if (open) {
-            m_feederMotor.set(FeederConstants.kOpenSpeed);
-        } else {
-            m_feederMotor.set(FeederConstants.kCloseSpeed);
-        }
-    }
+  }
 }
 

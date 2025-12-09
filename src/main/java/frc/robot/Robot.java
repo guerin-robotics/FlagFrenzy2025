@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,6 +21,9 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public Robot(){
+    CanBridge.runTCP();
+  }
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -30,6 +34,15 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     try {
       m_robotContainer = new RobotContainer();
+      
+      // Explicitly ensure all motors are stopped at startup
+      // This prevents any motors from running during initialization
+      if (m_robotContainer != null) {
+        m_robotContainer.getFeederSubsystem().stop();
+        m_robotContainer.getDriveSubsystem().setMotors(0, 0);
+        // Shooter default command already keeps it stopped, but ensure it's off
+        m_robotContainer.getShooterSubsystem().brake(0);
+      }
     } catch (Exception e) {
       System.err.println("CRITICAL: Failed to initialize RobotContainer: " + e.getMessage());
       e.printStackTrace();

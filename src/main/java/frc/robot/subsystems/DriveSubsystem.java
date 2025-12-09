@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -34,6 +35,26 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Gets the distance traveled by the left drive motor in meters.
+     * 
+     * @return Left distance in meters
+     */
+    public double getLeftEncoderMeters() {
+        double leftRotations = m_leftDrive.getPosition().getValueAsDouble();
+        return leftRotations * DriveConstants.kTalonFXRotationsToMeters;
+    }
+
+    /**
+     * Gets the distance traveled by the right drive motor in meters.
+     * 
+     * @return Right distance in meters
+     */
+    public double getRightEncoderMeters() {
+        double rightRotations = m_rightDrive.getPosition().getValueAsDouble();
+        return rightRotations * DriveConstants.kTalonFXRotationsToMeters;
+    }
+
+    /**
      * Resets the encoder positions to zero.
      */
     public void resetEncoders() {
@@ -64,8 +85,38 @@ public class DriveSubsystem extends SubsystemBase {
             rightSpeed = 0;
         }
         
+        // Clamp speeds to safe range [-1.0, 1.0] to prevent motor damage
+        leftSpeed = MathUtil.clamp(leftSpeed, -1.0, 1.0);
+        rightSpeed = MathUtil.clamp(rightSpeed, -1.0, 1.0);
+        
         m_leftDrive.set(leftSpeed);
         m_rightDrive.set(-rightSpeed); // Inverted to match physical orientation
+    }
+
+    /**
+     * Arcade drive method that applies turn sensitivity multiplier.
+     * This makes turning less sensitive for easier control.
+     *
+     * @param speed Forward/backward speed (-1.0 to 1.0)
+     * @param turn Turn speed (-1.0 to 1.0), will be reduced by turn sensitivity multiplier
+     */
+    public void arcadeDrive(double speed, double turn) {
+        // Validate inputs
+        if (!Double.isFinite(speed)) {
+            speed = 0;
+        }
+        if (!Double.isFinite(turn)) {
+            turn = 0;
+        }
+        
+        // Apply turn sensitivity multiplier to reduce turning effect
+        turn *= DriveConstants.kTurnSensitivityMultiplier;
+        
+        // Calculate left and right speeds for arcade drive
+        double leftSpeed = speed + turn;
+        double rightSpeed = speed - turn;
+        
+        setMotors(leftSpeed, rightSpeed);
     }
 
     /**

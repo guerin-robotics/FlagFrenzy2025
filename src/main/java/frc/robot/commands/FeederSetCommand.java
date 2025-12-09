@@ -8,30 +8,21 @@ import frc.robot.subsystems.FeederSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * Command to run the feeder at a set velocity when button is pressed.
+ * Command to run the feeder at a fixed percent output while button is held.
  * The feeder moves balls from the intake into the shooter.
  */
 public class FeederSetCommand extends Command {
     private final FeederSubsystem m_feederSubsystem;
 
-    /**
-     * Creates a new FeederSetCommand that runs the feeder at the configured velocity.
-     *
-     * @param feederSubsystem The feeder subsystem to use
-     */
+    /** Creates a new FeederSetCommand that runs the feeder at the configured percent output. */
     public FeederSetCommand(FeederSubsystem feederSubsystem) {
         m_feederSubsystem = feederSubsystem;
         addRequirements(feederSubsystem);
     }
 
     @Override
-    public void initialize() {
-        // Velocity control is handled in execute() - no initialization needed
-    }
-
-    @Override
     public void execute() {
-        // Run at configured velocity while command is active
+        // Run at configured percent output while button is held
         m_feederSubsystem.runAtVelocity();
     }
 
